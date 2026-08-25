@@ -29,7 +29,7 @@ export default function Home() {
     event?.preventDefault();
     setLoading(true);
     setError("");
-    setMessage("");
+    if (event) setMessage("");
     try {
       setResults(await api.search(checkIn, checkOut, guests));
     } catch (err) {
