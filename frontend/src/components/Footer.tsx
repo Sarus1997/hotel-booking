@@ -1,5 +1,6 @@
 import { usePreferences } from "../PreferencesContext";
 import { Link } from "react-router-dom";
+import logo from "../assets/logo-sr.png";
 
 export default function Footer() {
   const { language } = usePreferences();
@@ -8,8 +9,16 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-inner">
         <div className="footer-brand">
-          <Link to="/" className="footer-logo">Devin Hotel</Link>
-          <p>{language === "th" ? "ช่วงเวลาพักผ่อนที่ออกแบบมาเพื่อคุณ" : "Thoughtful stays, made for you."}</p>
+          <Link to="/" className="footer-logo">
+            <img
+              src={logo}
+              alt="SR logo"
+            />
+            <span>Hotel</span>
+          </Link>
+          <p className="footer-tagline">
+            {language === "th" ? "ช่วงเวลาพักผ่อนที่ออกแบบมาเพื่อคุณ" : "Thoughtful stays, made for you."}
+          </p>
         </div>
         <div className="footer-links">
           <span>{language === "th" ? "ไปยัง" : "Explore"}</span>
