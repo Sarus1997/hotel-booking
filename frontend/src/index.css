@@ -255,6 +255,13 @@ label {
   color: #1a7340;
 }
 
+.field-error {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #a4232a;
+}
+
 .auth-card {
   max-width: 420px;
   margin: 32px auto;
