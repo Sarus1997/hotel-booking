@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 
 import { api } from "../api";
-import type { Booking } from "../types";
+import type { Booking, Loyalty } from "../types";
 import { STATUS_LABELS, formatBaht, formatDate } from "../utils";
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loyalty, setLoyalty] = useState<Loyalty | null>(null);
 
   async function load() {
     setLoading(true);
     try {
       setBookings(await api.myBookings());
+      setLoyalty(await api.loyalty());
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -34,9 +36,43 @@ export default function MyBookings() {
     }
   }
 
+  async function redeem(points: number) {
+    try {
+      setLoyalty(await api.redeemPoints(points));
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  }
+
   return (
     <div className="page">
       <h2>การจองของฉัน</h2>
+      {loyalty && (
+        <section className="loyalty-panel">
+          <div>
+            <p className="muted">คะแนนสะสม</p>
+            <strong className="points-total">{loyalty.points_balance.toLocaleString()} คะแนน</strong>
+            <p className="muted small">สะสมแล้วทั้งหมด {loyalty.lifetime_points.toLocaleString()} คะแนน</p>
+          </div>
+          <div>
+            <p className="muted">เครดิตส่วนลด</p>
+            <strong>{formatBaht(loyalty.discount_credit)}</strong>
+            <p className="muted small">ระบบจะใช้ลดการจองครั้งถัดไปอัตโนมัติ</p>
+          </div>
+          <div className="rewards">
+            {loyalty.rewards.map((reward) => (
+              <button
+                className="ghost"
+                key={reward.points}
+                disabled={loyalty.points_balance < reward.points}
+                onClick={() => void redeem(reward.points)}
+              >
+                แลก {reward.label}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
       {error && <p className="alert error">{error}</p>}
       {loading && <p className="muted">กำลังโหลด...</p>}
       {!loading && bookings.length === 0 && <p className="empty">ยังไม่มีการจอง</p>}

@@ -57,6 +57,11 @@ def update_booking_status(
     booking = db.get(Booking, booking_id)
     if not booking:
         raise HTTPException(status_code=404, detail="ไม่พบการจองนี้")
+    if payload.status == "checked_out" and booking.status != "checked_out" and not booking.points_awarded:
+        earned = int(booking.total_price // 100)
+        booking.user.points_balance += earned
+        booking.user.lifetime_points += earned
+        booking.points_awarded = True
     booking.status = payload.status
     db.commit()
     db.refresh(booking)

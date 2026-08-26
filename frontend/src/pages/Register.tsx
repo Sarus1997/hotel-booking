@@ -70,6 +70,7 @@ export default function Register() {
           />
         </label>
         <button type="submit" disabled={loading}>
+          {loading && <span className="spinner" aria-hidden="true" />}
           {loading ? "กำลังสมัคร..." : "สมัครสมาชิก"}
         </button>
       </form>

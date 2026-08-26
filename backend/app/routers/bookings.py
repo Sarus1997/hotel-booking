@@ -47,6 +47,8 @@ def create_booking(
         raise HTTPException(status_code=409, detail="ห้องพักประเภทนี้เต็มในช่วงวันที่เลือก")
 
     nights = nights_between(payload.check_in, payload.check_out)
+    subtotal = round(room_type.price_per_night * nights, 2)
+    discount = min(user.discount_credit, subtotal)
     booking = Booking(
         code=generate_code(db),
         user_id=user.id,
@@ -54,10 +56,13 @@ def create_booking(
         check_in=payload.check_in,
         check_out=payload.check_out,
         guests=payload.guests,
-        total_price=round(room_type.price_per_night * nights, 2),
+        total_price=round(subtotal - discount, 2),
+        discount_amount=discount,
         status="confirmed",
         note=payload.note,
     )
+    if discount:
+        user.discount_credit = round(user.discount_credit - discount, 2)
     db.add(booking)
     db.commit()
     db.refresh(booking)

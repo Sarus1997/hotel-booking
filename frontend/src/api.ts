@@ -3,6 +3,7 @@ import type {
   AvailableRoomType,
   Booking,
   DashboardStats,
+  Loyalty,
   Room,
   RoomType,
   User,
@@ -61,6 +62,15 @@ export const api = {
   },
   me(): Promise<User> {
     return request<User>("/api/auth/me");
+  },
+  loyalty(): Promise<Loyalty> {
+    return request<Loyalty>("/api/loyalty/me");
+  },
+  redeemPoints(points: number): Promise<Loyalty> {
+    return request<Loyalty>("/api/loyalty/redeem", {
+      method: "POST",
+      body: JSON.stringify({ points }),
+    });
   },
   roomTypes(): Promise<RoomType[]> {
     return request<RoomType[]>("/api/room-types");

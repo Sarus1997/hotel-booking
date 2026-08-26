@@ -18,6 +18,9 @@ class UserOut(BaseModel):
     full_name: str
     phone: str
     role: str
+    points_balance: int
+    lifetime_points: int
+    discount_credit: float
     created_at: datetime
 
 
@@ -86,8 +89,10 @@ class BookingOut(BaseModel):
     check_out: date
     guests: int
     total_price: float
+    discount_amount: float
     status: str
     note: str
+    points_awarded: bool
     created_at: datetime
     room: RoomOut
     user: UserOut
@@ -104,3 +109,20 @@ class DashboardStats(BaseModel):
     total_users: int
     revenue: float
     occupancy_rate: float
+
+
+class RewardOption(BaseModel):
+    points: int
+    credit: float
+    label: str
+
+
+class RedeemPoints(BaseModel):
+    points: int = Field(ge=100)
+
+
+class LoyaltyOut(BaseModel):
+    points_balance: int
+    lifetime_points: int
+    discount_credit: float
+    rewards: list[RewardOption]

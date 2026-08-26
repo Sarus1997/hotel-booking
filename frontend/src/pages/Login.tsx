@@ -49,6 +49,7 @@ export default function Login() {
           />
         </label>
         <button type="submit" disabled={loading}>
+          {loading && <span className="spinner" aria-hidden="true" />}
           {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
         </button>
       </form>

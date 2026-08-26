@@ -15,6 +15,9 @@ class User(Base):
     phone: Mapped[str] = mapped_column(String(32), default="")
     hashed_password: Mapped[str] = mapped_column(String(255))
     role: Mapped[str] = mapped_column(String(16), default="customer")
+    points_balance: Mapped[int] = mapped_column(default=0)
+    lifetime_points: Mapped[int] = mapped_column(default=0)
+    discount_credit: Mapped[float] = mapped_column(default=0.0)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     bookings: Mapped[list["Booking"]] = relationship(back_populates="user")
@@ -60,8 +63,10 @@ class Booking(Base):
     check_out: Mapped[date] = mapped_column(Date)
     guests: Mapped[int] = mapped_column(default=1)
     total_price: Mapped[float] = mapped_column(default=0.0)
+    discount_amount: Mapped[float] = mapped_column(default=0.0)
     status: Mapped[str] = mapped_column(String(16), default="confirmed")
     note: Mapped[str] = mapped_column(Text, default="")
+    points_awarded: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     user: Mapped[User] = relationship(back_populates="bookings")

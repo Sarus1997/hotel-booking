@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 import { api } from "../api";
 import { useAuth } from "../AuthContext";
+import { usePreferences } from "../PreferencesContext";
 import type { AvailableRoomType } from "../types";
 import { formatBaht, todayISO } from "../utils";
 
 export default function Home() {
   const { user } = useAuth();
+  const { language } = usePreferences();
+  const thai = language === "th";
   const navigate = useNavigate();
 
   const [checkIn, setCheckIn] = useState(todayISO(1));
@@ -19,6 +22,7 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [booking, setBooking] = useState<AvailableRoomType | null>(null);
   const [note, setNote] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   useEffect(() => {
     void runSearch();
@@ -43,6 +47,7 @@ export default function Home() {
   async function confirmBooking() {
     if (!booking) return;
     setError("");
+    setBookingLoading(true);
     try {
       const created = await api.createBooking({
         room_type_id: booking.id,
@@ -57,6 +62,8 @@ export default function Home() {
       void runSearch();
     } catch (err) {
       setError((err as Error).message);
+    } finally {
+      setBookingLoading(false);
     }
   }
 
@@ -71,11 +78,11 @@ export default function Home() {
   return (
     <div>
       <section className="hero">
-        <h1>ค้นหาห้องพักที่ใช่สำหรับคุณ</h1>
-        <p>โรงแรมเดวินรีสอร์ท · ห้องพักสะอาด บริการอบอุ่น ใจกลางเมือง</p>
+        <h1>{thai ? "ค้นหาห้องพักที่ใช่สำหรับคุณ" : "Find your perfect stay"}</h1>
+        <p>{thai ? "โรงแรมเดวินรีสอร์ท · ห้องพักสะอาด บริการอบอุ่น ใจกลางเมือง" : "Devin Hotel · Thoughtful rooms and warm hospitality in the heart of the city"}</p>
         <form className="search-bar" onSubmit={runSearch}>
           <label>
-            เช็คอิน
+            {thai ? "เช็คอิน" : "Check-in"}
             <input
               type="date"
               value={checkIn}
@@ -85,7 +92,7 @@ export default function Home() {
             />
           </label>
           <label>
-            เช็คเอาท์
+            {thai ? "เช็คเอาท์" : "Check-out"}
             <input
               type="date"
               value={checkOut}
@@ -95,17 +102,18 @@ export default function Home() {
             />
           </label>
           <label>
-            ผู้เข้าพัก
+            {thai ? "ผู้เข้าพัก" : "Guests"}
             <select value={guests} onChange={(e) => setGuests(Number(e.target.value))}>
               {[1, 2, 3, 4, 5].map((n) => (
                 <option key={n} value={n}>
-                  {n} ท่าน
+                  {n} {thai ? "ท่าน" : n === 1 ? "guest" : "guests"}
                 </option>
               ))}
             </select>
           </label>
           <button type="submit" disabled={loading}>
-            {loading ? "กำลังค้นหา..." : "ค้นหาห้องว่าง"}
+            {loading && <span className="spinner" aria-hidden="true" />}
+            {loading ? (thai ? "กำลังค้นหา..." : "Searching...") : thai ? "ค้นหาห้องว่าง" : "Search rooms"}
           </button>
         </form>
       </section>
@@ -114,10 +122,15 @@ export default function Home() {
       {message && <p className="alert success">{message}</p>}
 
       <section className="room-grid">
+        {loading && (
+          <div className="loading-grid" aria-label="กำลังโหลดห้องพัก">
+            {[1, 2, 3].map((item) => <div className="skeleton" key={item} />)}
+          </div>
+        )}
         {results?.length === 0 && !loading && (
           <p className="empty">ไม่พบห้องว่างในช่วงวันที่ที่เลือก ลองเปลี่ยนวันที่ดูนะครับ</p>
         )}
-        {results?.map((roomType) => (
+        {!loading && results?.map((roomType) => (
           <article className="room-card" key={roomType.id}>
             <img src={roomType.image_url} alt={roomType.name} loading="lazy" />
             <div className="room-card-body">
@@ -134,7 +147,7 @@ export default function Home() {
                   <span className="muted"> / คืน</span>
                   <div className="muted">รวม {formatBaht(roomType.total_price)}</div>
                 </div>
-                <button onClick={() => onBookClick(roomType)}>จองเลย</button>
+                <button onClick={() => onBookClick(roomType)}>{thai ? "จองเลย" : "Book now"}</button>
               </div>
             </div>
           </article>
@@ -177,7 +190,10 @@ export default function Home() {
               <button className="ghost" onClick={() => setBooking(null)}>
                 ยกเลิก
               </button>
-              <button onClick={confirmBooking}>ยืนยันการจอง</button>
+              <button onClick={confirmBooking} disabled={bookingLoading}>
+                {bookingLoading && <span className="spinner" aria-hidden="true" />}
+                {bookingLoading ? "กำลังยืนยัน..." : "ยืนยันการจอง"}
+              </button>
             </div>
           </div>
         </div>

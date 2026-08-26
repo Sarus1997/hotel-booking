@@ -4,6 +4,9 @@ export interface User {
   full_name: string;
   phone: string;
   role: "admin" | "customer";
+  points_balance: number;
+  lifetime_points: number;
+  discount_credit: number;
   created_at: string;
 }
 
@@ -20,6 +23,7 @@ export interface AvailableRoomType extends RoomType {
   available_rooms: number;
   nights: number;
   total_price: number;
+  discount_amount: number;
 }
 
 export interface Room {
@@ -58,4 +62,17 @@ export interface AuthResponse {
   access_token: string;
   token_type: string;
   user: User;
+}
+
+export interface RewardOption {
+  points: number;
+  credit: number;
+  label: string;
+}
+
+export interface Loyalty {
+  points_balance: number;
+  lifetime_points: number;
+  discount_credit: number;
+  rewards: RewardOption[];
 }
