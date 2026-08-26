@@ -1,4 +1,5 @@
 import type { AvailableRoomType } from "../types";
+import { getRoomCopy } from "../roomTranslations";
 import { formatBaht } from "../utils";
 
 interface BookingModalProps {
@@ -26,11 +27,13 @@ export default function BookingModal({
   onCancel,
   onConfirm,
 }: BookingModalProps) {
+  const copy = getRoomCopy(booking, thai);
+
   return (
     <div className="modal-backdrop" onClick={onCancel}>
       <div className="modal" onClick={(event) => event.stopPropagation()}>
         <h2>{thai ? "ยืนยันการจอง" : "Confirm booking"}</h2>
-        <p className="muted">{booking.name}</p>
+        <p className="muted">{copy.name}</p>
         <dl className="summary">
           <div><dt>{thai ? "เช็คอิน" : "Check-in"}</dt><dd>{checkIn}</dd></div>
           <div><dt>{thai ? "เช็คเอาท์" : "Check-out"}</dt><dd>{checkOut}</dd></div>

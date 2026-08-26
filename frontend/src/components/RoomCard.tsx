@@ -1,4 +1,5 @@
 import type { AvailableRoomType } from "../types";
+import { getRoomCopy } from "../roomTranslations";
 import { formatBaht } from "../utils";
 
 interface RoomCardProps {
@@ -8,12 +9,14 @@ interface RoomCardProps {
 }
 
 export default function RoomCard({ roomType, thai, onBook }: RoomCardProps) {
+  const copy = getRoomCopy(roomType, thai);
+
   return (
     <article className="room-card">
-      <img src={roomType.image_url} alt={roomType.name} loading="lazy" />
+      <img src={roomType.image_url} alt={copy.name} loading="lazy" />
       <div className="room-card-body">
-        <h3>{roomType.name}</h3>
-        <p className="muted">{roomType.description}</p>
+        <h3>{copy.name}</h3>
+        <p className="muted">{copy.description}</p>
         <ul className="facts">
           <li>{thai ? "รองรับ" : "Up to"} {roomType.capacity} {thai ? "ท่าน" : "guests"}</li>
           <li>{thai ? "ว่าง" : "Available"} {roomType.available_rooms}</li>
