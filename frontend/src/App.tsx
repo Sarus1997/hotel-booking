@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 
 import { useAuth } from "./AuthContext";
 import Navbar from "./components/Navbar";
-import { usePreferences } from "./PreferencesContext";
+import Footer from "./components/Footer";
 import Admin from "./pages/Admin";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -28,8 +28,6 @@ function Protected({
 }
 
 export default function App() {
-  const { language } = usePreferences();
-
   return (
     <div className="app">
       <Navbar />
@@ -60,10 +58,8 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+      <Footer />
 
-      <footer className="footer">
-        <span>© 2026 Devin Hotel · {language === "th" ? "ระบบจองห้องพักโรงแรม" : "Hotel booking system"}</span>
-      </footer>
     </div>
   );
 }
